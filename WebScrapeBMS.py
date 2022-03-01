@@ -4,18 +4,25 @@ import os
 import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+chrome_options = Options()
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('--headless')
+chrome_options.add_argument('--disable-dev-shm-usage')
+driver=webdriver.Chrome(options=chrome_options)
+import time
 
 
 BMS_url="https://in.bookmyshow.com/explore/home"
-response=requests.get(BMS_url)
-response.status_code
-with open("BMS.html","w") as f:
-    f.write(response.text)
+driver.get(BMS_url)
+#time.sleep(10)
+cities=driver.find_elements(By.TAG_NAME,'div')
+driver.implicitly_wait(30)
+print('cities',cities)
+df=pd.DataFrame(cities)
+#df.to_csv('div_tag.csv')
 
-with open('BMS.html','r') as file:
-    html_source=file.read()
-BMS_doc=BeautifulSoup(html_source,'html.parser')
 
-Title=BMS_doc.title
-Cities=BMS_doc.find_all(class_="sc-iuDHTM uqCMs")
-print('Cities',Cities)
+data=cities.find_element(By.CLASS_NAME,'sc-kaNhvL jlISnX ellipsis')
+title=data.text
+print('title',title)
